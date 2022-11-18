@@ -8,6 +8,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
+
 @RestController
 public class AopController {
 
@@ -39,6 +45,23 @@ public class AopController {
         return restTemplate.exchange(randomUserUrl, HttpMethod.GET, null, String.class);
     }
 
+    /*
+     * 2.  hash 演算法，例如 SHA512, 甚至 MD5，怎麼針對一個字串內容做出 hash 的字串
+     * */
+    @GetMapping("/psw/hash")
+    public String passwordToHash() throws NoSuchAlgorithmException {
+        String password = "abc123";
+
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        byte[] data = md.digest(password.getBytes());
+        StringBuilder sb = new StringBuilder();
+        for(int i=0;i<data.length;i++)
+        {
+            sb.append(Integer.toString((data[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        System.out.println(sb);
+        return sb.toString();
+    }
 
     /*
     * 3. 執行某段 SQL 取得 db 裡面的內容
