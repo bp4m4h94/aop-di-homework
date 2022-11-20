@@ -1,4 +1,4 @@
-package com.example.aopdihomework.aop.api;
+package com.example.aopdihomework.aop.controller;
 
 import com.example.aopdihomework.aop.module.slack.SendMessageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,8 +66,8 @@ public class AopController {
     * */
     @GetMapping("/db/customer/count")
     public String getCusCount() {
-        int result = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM DEQUE.CUSTOMER", Integer.class);
+        String result = jdbcTemplate.queryForObject(
+                "SELECT PASSWORD FROM DEQUE.ACCOUNT WHERE ACCOUNT ='Ryan' ", String.class);
         return "How many rows in Table \"CUSTOMER\" : " + result;
     }
 
