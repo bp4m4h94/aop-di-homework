@@ -4,12 +4,10 @@ import com.example.aopdihomework.aop.adapter.FailedCounterAdapter;
 import com.example.aopdihomework.aop.adapter.OptAdopter;
 import com.example.aopdihomework.aop.adapter.ProfilerRepo;
 import com.example.aopdihomework.aop.adapter.impl.*;
-import com.example.aopdihomework.aop.module.slack.SendMessageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
@@ -23,6 +21,10 @@ public class AuthenticationService {
     private final ProfilerRepo passwordRepo;
     private final FailedCounterAdapter failedCounterAdapter;
     private final LoggerAdapter loggerAdapter;
+    private final NotifocationAdapterImpl notifocationAdapterImpl = new NotifocationAdapterImpl();
+
+    @Value("${slack.api.postMessage.url}")
+    private String slackUrl;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -53,11 +55,7 @@ public class AuthenticationService {
                 Integer failCount = failedCounterAdapter.getFailedCounter(account);
                 //  record log
                 loggerAdapter.log("fail " + failCount + "times");
-                HttpHeaders headers1 = new HttpHeaders();
-                headers1.setContentType(MediaType.APPLICATION_JSON);
-                SendMessageRequest req1 = new SendMessageRequest();
-                req1.setText("Hello, notify slack");
-                HttpEntity<SendMessageRequest> request2 = new HttpEntity<>(req1, headers1);
+                notifocationAdapterImpl.sendNotification(restTemplate, slackUrl);
                 failedCounterAdapter.addFailedCounter(account);
                 return false;
             }
@@ -65,6 +63,11 @@ public class AuthenticationService {
             throw new FailedTooManyTimesException();
         }
     }
+
+    private void sendNotification(RestTemplate restTemplate1, String slackUrl1) {
+        notifocationAdapterImpl.sendNotification(restTemplate1, slackUrl1);
+    }
+
 }
 
 

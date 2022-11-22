@@ -59,8 +59,8 @@ public class AuthenticationServiceTest {
     @Test
     public void should_reset_failed_count_when_valid()
     {
-        WhenValid("joey");
-        ShouldResetFailedCount("joey");
+        whenValid("joey");
+        shouldResetFailedCount("joey");
     }
 
     @Test
@@ -73,28 +73,28 @@ public class AuthenticationServiceTest {
         boolean isValid = _authenticationService.isValid("Ryan",
                 "abc123",
                 "123_456_joey_hello_world");
-        ShouldBeInvalid(isValid);
+        shouldBeInvalid(isValid);
     }
 
     @Test
     public void should_add_failed_count_when_invalid()
     {
-        WhenInvalid("joey");
-        ShouldAddFailedCount("joey");
+        whenInvalid("joey");
+        shouldAddFailedCount("joey");
     }
 
     @Test
     public void should_notify_user_when_invalid()
     {
-        WhenInvalid("joey");
-//        ShouldNotifyUser("joey");
+        whenInvalid("joey");
+        shouldNotifyUser("joey");
     }
 
     @Test
     public void should_log_current_failed_count_when_invalid()
     {
-        GivenCurrentFailedCount(3);
-        WhenInvalid("joey");
+        givenCurrentFailedCount(3);
+        whenInvalid("joey");
         ShouldLog("times:3.");
     }
 
@@ -104,7 +104,7 @@ public class AuthenticationServiceTest {
         doThrow(FailedTooManyTimesException.class).when(_authenticationService.isValid("joey", "hello", "123_456_joey_hello_world"));
     }
 
-    private void ShouldBeInvalid(boolean isValid)
+    private void shouldBeInvalid(boolean isValid)
     {
         Assert.assertFalse(isValid);
     }
@@ -120,7 +120,7 @@ public class AuthenticationServiceTest {
 //        _logger.Received(1).LogInfo(Arg.Is<String>(s => s.Contains(containContent)));
     }
 
-    private void GivenCurrentFailedCount(int failedCount)
+    private void givenCurrentFailedCount(int failedCount)
     {
         Mockito.when( _failedCounter.getFailedCounter("Ryan")).thenReturn(failedCount);
     }
@@ -133,14 +133,14 @@ public class AuthenticationServiceTest {
 //                        Arg.Is<String>(s => s.Contains(account) && s.Contains("login failed")));
 //    }
 
-    private void ShouldAddFailedCount(String account)
+    private void shouldAddFailedCount(String account)
     {
         Mockito.verify(_failedCounter, Mockito.times(1)).addFailedCounter(account);
 
 //        _failedCounter.Received(1).Add(account);
     }
 
-    private void WhenInvalid(String account) {
+    private void whenInvalid(String account) {
         givenAccountIsLocked("joey", false);
         givenPasswordFromRepo(account, "hashed password");
         givenHashedResult("hello", "wrong password");
@@ -155,14 +155,14 @@ public class AuthenticationServiceTest {
         }
     }
 
-    private void ShouldResetFailedCount(String account)
+    private void shouldResetFailedCount(String account)
     {
         Mockito.verify(_failedCounter, Mockito.times(1)).resetFailedCounter(account);
 
 //        _failedCounter.Received(1).Reset(account);
     }
 
-    private void WhenValid(String account)
+    private void whenValid(String account)
     {
         givenAccountIsLocked("joey", false);
         givenPasswordFromRepo(account, "hashed password");
