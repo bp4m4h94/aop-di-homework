@@ -7,6 +7,7 @@ import com.example.aopdihomework.aop.adapter.ProfilerRepo;
 import com.example.aopdihomework.aop.adapter.impl.FailedTooManyTimesException;
 import com.example.aopdihomework.aop.adapter.impl.LoggerAdapter;
 import com.example.aopdihomework.aop.service.AuthenticationService;
+import com.sun.nio.sctp.Notification;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +22,8 @@ public class AuthenticationServiceTest {
     private AuthenticationService _authenticationService;
     private FailedCounterAdapter _failedCounter;
     private HashAdapter _hash;
+
+    private Notification notification;
     private LoggerAdapter _logger;
 //        private INotification _notification;
     private OptAdopter _otp;
@@ -125,13 +128,11 @@ public class AuthenticationServiceTest {
         Mockito.when( _failedCounter.getFailedCounter("Ryan")).thenReturn(failedCount);
     }
 
-//    private void ShouldNotifyUser(String account)
-//    {
-//        _notification
-//                .Received(1)
-//                .Notify(account,
-//                        Arg.Is<String>(s => s.Contains(account) && s.Contains("login failed")));
-//    }
+    private void shouldNotifyUser(String account)
+    {
+        Mockito.verify(notification, Mockito.times(1)).notify(account, "account: " + account + " failed to login.");
+
+    }
 
     private void shouldAddFailedCount(String account)
     {

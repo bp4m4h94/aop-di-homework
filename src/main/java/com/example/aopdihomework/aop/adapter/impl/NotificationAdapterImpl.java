@@ -1,4 +1,4 @@
-package com.example.aopdihomework.aop.service;
+package com.example.aopdihomework.aop.adapter.impl;
 
 import com.example.aopdihomework.aop.module.slack.SendMessageRequest;
 import org.springframework.http.HttpEntity;
@@ -7,11 +7,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-public class NotifocationAdapterImpl {
-    public NotifocationAdapterImpl() {
+public class NotificationAdapterImpl implements NotificationAdapter {
+    public NotificationAdapterImpl() {
     }
 
-    void sendNotification(RestTemplate restTemplate1, String slackUrl1) {
+    @Override
+    public void sendNotification(RestTemplate restTemplate1, String slackUrl1) {
         HttpHeaders headers1 = new HttpHeaders();
         headers1.setContentType(MediaType.APPLICATION_JSON);
         SendMessageRequest req1 = new SendMessageRequest();

@@ -21,7 +21,7 @@ public class AuthenticationService {
     private final ProfilerRepo passwordRepo;
     private final FailedCounterAdapter failedCounterAdapter;
     private final LoggerAdapter loggerAdapter;
-    private final NotifocationAdapterImpl notifocationAdapterImpl = new NotifocationAdapterImpl();
+    private final NotificationAdapterImpl notifocationAdapterImpl = new NotificationAdapterImpl();
 
     @Value("${slack.api.postMessage.url}")
     private String slackUrl;
