@@ -21,6 +21,6 @@ public class OptAdopterImpl implements OptAdopter {
         headers.setBearerAuth("botToken");
         SendMessageRequest req = new SendMessageRequest();
         HttpEntity<SendMessageRequest> request1 = new HttpEntity<SendMessageRequest>(req, headers);
-        return restTemplate.exchange("www.otp.com", HttpMethod.POST, request1, String.class).getBody();
+        return "opt123";
     }
 }

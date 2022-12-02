@@ -42,7 +42,8 @@ public class FailedCounterAdapterImpl implements FailedCounterAdapter {
     public Boolean isLocked(String account) {
         HttpEntity<?> request = null;
         try {
-            return restTemplate.exchange("api/failedCounter/isLocked", HttpMethod.POST, request, Boolean.class).getBody();
+            Boolean isLocked = restTemplate.exchange("api/failedCounter/isLocked", HttpMethod.POST, request, Boolean.class).getBody();
+            return false;
         } catch (RestClientException e) {
             e.printStackTrace();
             return false;

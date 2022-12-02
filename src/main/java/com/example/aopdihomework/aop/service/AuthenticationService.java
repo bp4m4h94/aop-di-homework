@@ -1,13 +1,10 @@
 package com.example.aopdihomework.aop.service;
 
-import com.example.aopdihomework.aop.adapter.FailedCounterAdapter;
-import com.example.aopdihomework.aop.adapter.OptAdopter;
-import com.example.aopdihomework.aop.adapter.ProfilerRepo;
+import com.example.aopdihomework.aop.adapter.*;
 import com.example.aopdihomework.aop.adapter.impl.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
@@ -16,25 +13,34 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class AuthenticationService {
 
-    private final OptAdopter optAdopter;
-    private final HashAdapterImpl hashAdapterImpl;
-    private final ProfilerRepo passwordRepo;
-    private final FailedCounterAdapter failedCounterAdapter;
-    private final LoggerAdapter loggerAdapter;
-    private final NotificationAdapterImpl notifocationAdapterImpl = new NotificationAdapterImpl();
+    private final OptAdopter _optAdopter;
+    private final HashAdapter _hashAdapterImpl;
+    private final ProfilerRepo _passwordRepo;
+    private final FailedCounterAdapter _failedCounterAdapter;
+    private final LoggerAdapter _loggerAdapter;
+    private final NotificationAdapter _notificationAdapter;
 
     @Value("${slack.api.postMessage.url}")
     private String slackUrl;
 
+    @Value("spring.datasource.password")
+    private String userPwd;
+
+    @Value("spring.datasource.username")
+    private String userAcct;
+
+
     @Autowired
     private RestTemplate restTemplate;
 
-    public AuthenticationService() {
-        hashAdapterImpl = new HashAdapterImpl();
-        passwordRepo = new ProfilerRepoImpl();
-        failedCounterAdapter = new FailedCounterAdapterImpl();
-        optAdopter = new OptAdopterImpl();
-        loggerAdapter = new LoggerAdapterImpl();
+
+    public AuthenticationService(HashAdapter hashAdapter, ProfilerRepo profilerRepo, FailedCounterAdapter failedCounterAdapter, OptAdopter optAdopter, LoggerAdapter loggerAdapter, NotificationAdapter notificationAdapter) {
+        _hashAdapterImpl = hashAdapter;
+        _passwordRepo = profilerRepo;
+        _failedCounterAdapter = failedCounterAdapter;
+        _optAdopter = optAdopter;
+        _loggerAdapter = loggerAdapter;
+        _notificationAdapter = notificationAdapter;
     }
 
 
@@ -42,21 +48,20 @@ public class AuthenticationService {
     @GetMapping("/db/customer/count")
     public boolean isValid(String account, String password, String otpCurrent) throws FailedTooManyTimesException {
 
-        HttpEntity<?> request = null;
-        boolean isLocked = failedCounterAdapter.isLocked(account);
+        boolean isLocked = _failedCounterAdapter.isLocked(account);
         if (!isLocked) {
-            passwordRepo.getPassword(account);
-            String hashedPassword = hashAdapterImpl.getHash(password);
-            String optAdopterOtp = optAdopter.getOtp(account);
-            if (hashedPassword.equals(password) && optAdopterOtp.equals(otpCurrent)) {
-                failedCounterAdapter.resetFailedCounter(account);
+            _passwordRepo.getPassword(account);
+//            String hashedPassword = hashAdapterImpl.getHash(userPwd);
+            String optAdopterOtp = _optAdopter.getOtp(account);
+            if (userPwd.equals(password) && optAdopterOtp.equals(otpCurrent)) {
+                _failedCounterAdapter.resetFailedCounter(account);
                 return true;
             } else {
-                Integer failCount = failedCounterAdapter.getFailedCounter(account);
+                Integer failCount = _failedCounterAdapter.getFailedCounter(account);
                 //  record log
-                loggerAdapter.log("fail " + failCount + "times");
-                notifocationAdapterImpl.sendNotification(restTemplate, slackUrl);
-                failedCounterAdapter.addFailedCounter(account);
+                _loggerAdapter.log("fail " + failCount + "times");
+                _notificationAdapter.sendNotification(account, slackUrl);
+                _failedCounterAdapter.addFailedCounter(account);
                 return false;
             }
         } else {
@@ -64,9 +69,6 @@ public class AuthenticationService {
         }
     }
 
-    private void sendNotification(RestTemplate restTemplate1, String slackUrl1) {
-        notifocationAdapterImpl.sendNotification(restTemplate1, slackUrl1);
-    }
 
 }
 

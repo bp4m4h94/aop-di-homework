@@ -1,5 +1,6 @@
 package com.example.aopdihomework.aop.adapter.impl;
 
+import com.example.aopdihomework.aop.adapter.LoggerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
