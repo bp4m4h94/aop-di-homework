@@ -30,10 +30,6 @@ public class AuthenticationService {
     private String userAcct;
 
 
-    @Autowired
-    private RestTemplate restTemplate;
-
-
     public AuthenticationService(HashAdapter hashAdapter, ProfilerRepo profilerRepo, FailedCounterAdapter failedCounterAdapter, OptAdopter optAdopter, LoggerAdapter loggerAdapter, NotificationAdapter notificationAdapter) {
         _hashAdapterImpl = hashAdapter;
         _passwordRepo = profilerRepo;
